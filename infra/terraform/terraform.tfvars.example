@@ -1,0 +1,11 @@
+aws_region   = "ap-northeast-2"
+aws_profile  = "default"
+project_name = "sesac-semi"
+env          = "dev"
+
+ssh_allowed_cidr = "INSTANCE_PUBLIC_IP/32"
+key_name         = "KEYPAIR_NAME"
+
+instance_type  = "t3.micro"
+s3_bucket_name = "UNIQUE-BUCKET-NAME"
+uploads_prefix = "uploads/"
