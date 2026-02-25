@@ -116,7 +116,7 @@
 - AWS CLI 로그인/프로파일 확인 (aws sts get-caller-identity)
     - 검증: 계정/ARN 출력
 - 로컬에 Terraform 설치 확인 (terraform -version)
-- 로컬 SSH 키 준비(이미 있으면 재사용)
+- 로컬 SSH 키 준비
     - 검증: ~/.ssh/<key> 존재, 권한 600
 - 프로젝트 레포 구조 만들기
     - 예: infra/(terraform), backend/, frontend/, docs/
@@ -260,7 +260,7 @@
 
 ### **Day 2 완료 기준(필수)**
 
-- 웹에서 글 작성 → 목록/상세 조회가 **끝까지 동작**
+- 웹에서 글 작성 → 목록/상세 조회가 끝까지 동작
 - DB 테이블 생성/마이그레이션이 재현 가능(Alembic)
 - DB는 외부 공개되지 않음(localhost만)
 
@@ -284,23 +284,22 @@
     - 파일 선택 → presign 호출 → S3 PUT → key 확보
     - 글 작성/수정 요청에 image_key 포함
 - 이미지 표시 정책 결정
-    - (단순) public read는 비추
-    - (권장) presigned GET 엔드포인트 추가
+    - presigned GET 엔드포인트 추가
         - GET /api/uploads/presign-get?key=...
 - 게시글 상세에서 이미지 표시
     - 검증: 업로드 후 상세 페이지에서 이미지 실제 로드
 
 ### **B. 로그인(JWT 최소 버전)**
 
-> 3일 MVP 기준: “로그인만”, 회원가입/권한관리 제외 권장
+> 3일 MVP: “로그인만”, 회원가입/권한관리 제외
 > 
 - DB: users 테이블
     - id, email, password_hash, created_at
 - Backend: 로그인 API
     - POST /api/auth/login → JWT 발급
-    - 보호 API 1개 이상 적용(예: POST /api/posts)
+    - 보호 API 1개 이상 적용(e.g. POST /api/posts)
 - Frontend: 로그인 화면 + 토큰 저장(단순화)
-    - localStorage에 저장(3일 MVP 현실안)
+    - localStorage에 저장
     - 요청 시 Authorization 헤더 부착
 - 검증: 로그인 전에는 글 작성 실패, 로그인 후 성공
 
@@ -317,27 +316,11 @@
     - 매일 03:00 같은 고정 시간
     - 검증: crontab -l로 등록 확인
 
-### **D. 문서화/마무리**
-
-- Notion/README에 “재현 절차” 정리
-    - terraform apply
-    - EC2 프로비저닝 단계(수동 명령)
-    - backend systemd
-    - nginx 설정
-    - S3 CORS/policy
-- 트러블슈팅 로그(막힌 포인트와 해결) 5-10줄이라도 기록
-
-### **Day 3 완료 기준(필수)**
+### **Day 3 완료 기준**
 
 - 글 작성 + 이미지 업로드 + 이미지 표시까지 **E2E 동작**
 - 로그인(최소) 동작
 - pg_dump→S3 백업 1회 성공(크론은 옵션)
 
----
 
-## **실패 방지 “중요 제한선”(반드시 지키기)**
 
-- Terraform으로 VPC/NAT까지 확장하지 않기(기본 VPC 사용)
-- 업로드는 반드시 **presigned PUT**(서버 직접 업로드 금지)
-- 기능 욕심 금지: 댓글/검색/관리자/채팅은 3일 범위 밖
-- Elastic IP 미사용이므로 IP 바뀔 수 있음 → 프론트 .env로만 관리
