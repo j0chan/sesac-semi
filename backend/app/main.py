@@ -2,7 +2,10 @@ import os
 from fastapi import FastAPI
 from sqlalchemy import create_engine, text
 
-app = FastAPI()
+app = FastAPI(
+    docs_url="/api/docs",
+    openapi_url="/api/openapi.json",
+)
 
 DATABASE_URL = os.getenv("DATABASE_URL", "")
 _engine = None
