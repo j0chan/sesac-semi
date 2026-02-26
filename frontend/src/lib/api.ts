@@ -1,12 +1,21 @@
-const BASE = import.meta.env.VITE_API_BASE_URL as string;
+const BASE = (import.meta.env.VITE_API_BASE_URL ?? "") as string;
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
+async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const token = localStorage.getItem("token");
+  const headers = new Headers(init.headers);
+
+  // JSON 요청 기본값
+  if (!headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
+
+  if (token) {
+    headers.set("Authorization", `Bearer ${token}`);
+  }
+
   const res = await fetch(`${BASE}${path}`, {
     ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...(init?.headers ?? {}),
-    },
+    headers,
   });
 
   if (!res.ok) {
@@ -14,7 +23,6 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     throw new Error(`${res.status} ${res.statusText} ${text}`.trim());
   }
 
-  // 204는 바디가 없음
   if (res.status === 204) return undefined as T;
 
   return (await res.json()) as T;
