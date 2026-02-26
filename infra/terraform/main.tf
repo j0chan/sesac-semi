@@ -139,3 +139,19 @@ resource "aws_instance" "app" {
     Name = "${var.project_name}-${var.env}-ec2"
   }
 }
+
+resource "aws_s3_bucket_cors_configuration" "uploads_cors" {
+  bucket = aws_s3_bucket.uploads.id
+
+  cors_rule {
+    allowed_origins = [
+      "http://localhost:5173",
+      "http://127.0.0.1:5173",
+      "http://13.209.70.63"
+    ]
+    allowed_methods = ["PUT", "GET", "HEAD"]
+    allowed_headers = ["*"]
+    expose_headers  = ["ETag"]
+    max_age_seconds = 3000
+  }
+}
