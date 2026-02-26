@@ -7,3 +7,4 @@ alembic
 boto3
 pyjwt
 passlib[bcrypt]
+bcrypt==3.2.2
