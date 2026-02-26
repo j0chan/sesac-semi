@@ -7,6 +7,8 @@ app = FastAPI(
     openapi_url="/api/openapi.json",
 )
 
+app.include_router(posts_router)
+
 DATABASE_URL = os.getenv("DATABASE_URL", "")
 _engine = None
 
