@@ -1,9 +1,10 @@
 # backend/app/routers/posts.py
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import select, desc
 
+from app.deps import get_current_user
 from app.db import get_db
 from app.models import Post
 from app.schemas import PostCreate, PostUpdate, PostOut
@@ -12,7 +13,7 @@ router = APIRouter(prefix="/api/posts", tags=["posts"])
 
 
 @router.post("", response_model=PostOut, status_code=status.HTTP_201_CREATED)
-def create_post(payload: PostCreate, db: Session = Depends(get_db)):
+def create_post(payload: PostCreate, db: Session = Depends(get_db), user=Depends(get_current_user)):
     post = Post(
         title=payload.title,
         content=payload.content,
