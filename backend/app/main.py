@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
 from app.routers.posts import router as posts_router
 
 app = FastAPI(
@@ -6,7 +8,7 @@ app = FastAPI(
     openapi_url="/api/openapi.json",
 )
 
-# 개발용 CORS: 로컬 프론트에서 EC2 API 호출 허용
+# 로컬 프론트(dev server)에서 EC2 API 호출을 허용하기 위한 CORS 설정
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
