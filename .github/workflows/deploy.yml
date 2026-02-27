@@ -31,10 +31,12 @@ jobs:
 
       - name: Setup SSH
         run: |
+          set -e
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H "${{ secrets.EC2_HOST }}" >> ~/.ssh/known_hosts
+          echo "Host=${{ secrets.EC2_HOST }}"
+          ssh-keyscan -T 10 -H "${{ secrets.EC2_HOST }}" >> ~/.ssh/known_hosts
 
       # 1) Backend: pull + deps + migrate + restart (EC2에서 실행)
       - name: Deploy backend (pull/install/migrate/restart)
