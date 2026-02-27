@@ -1,0 +1,38 @@
+:root {
+  --color-primary: #022658;
+  --color-primary-hover: #0a4fa3;
+  --color-primary-soft: #e8f0fb;
+  --color-surface: #f6f8fc;
+  --color-surface-alt: #ffffff;
+  --color-border: #d6dfec;
+  --color-text: #111827;
+  --color-text-muted: #4b5563;
+  --color-error: #d14343;
+  --color-error-soft: #fbecec;
+  --color-success: #2e7d32;
+  --color-success-soft: #e9f5eb;
+  --color-info: #2563eb;
+  --color-info-soft: #eff6ff;
+
+  --shadow-1: 0 12px 30px rgba(2, 38, 88, 0.08);
+  --shadow-2: 0 18px 42px rgba(2, 38, 88, 0.14);
+
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 40px;
+  --space-8: 56px;
+
+  --font-body: "Pretendard Variable", "Pretendard", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --container-max: 1160px;
+  --transition-fast: 120ms ease;
+  --transition-mid: 220ms ease;
+}
