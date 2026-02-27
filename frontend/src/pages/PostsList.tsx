@@ -30,7 +30,7 @@ export default function PostsList() {
           {loggedIn ? (
             <button onClick={onLogout}>Logout</button>
           ) : (
-            <Link to="/login">Login</Link>
+            <Link to="/login">Loginnn</Link>
           )}
         </div>
       </div>
