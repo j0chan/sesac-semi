@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import type { Post } from "../types";
 import { deletePost, getPost } from "../lib/posts";
+import { presignGet } from "../lib/uploads";
 
 export default function PostDetail() {
     const { id } = useParams();
@@ -9,14 +10,39 @@ export default function PostDetail() {
     const nav = useNavigate();
 
     const [post, setPost] = useState<Post | null>(null);
+    const [imgUrl, setImgUrl] = useState<string>("");
     const [err, setErr] = useState<string>("");
 
+    // 게시글 로드
     useEffect(() => {
         if (!Number.isFinite(postId)) return;
         getPost(postId)
-            .then(setPost)
+            .then((p) => {
+                setPost(p);
+                setErr("");
+            })
             .catch((e) => setErr(String(e)));
     }, [postId]);
+
+    // image_key가 있으면 presigned GET URL 받아오기
+    useEffect(() => {
+        let cancelled = false;
+
+        setImgUrl("");
+        if (!post?.image_key) return;
+
+        presignGet(post.image_key)
+            .then(({ url }) => {
+                if (!cancelled) setImgUrl(url);
+            })
+            .catch((e) => {
+                if (!cancelled) setErr(String(e));
+            });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [post?.image_key]);
 
     async function onDelete() {
         if (!confirm("Delete this post?")) return;
@@ -45,6 +71,18 @@ export default function PostDetail() {
             ) : (
                 <>
                     <h1>{post.title}</h1>
+
+                    { }
+                    {imgUrl && (
+                        <div style={{ margin: "12px 0" }}>
+                            <img
+                                src={imgUrl}
+                                alt="post"
+                                style={{ maxWidth: 520, width: "100%", borderRadius: 8 }}
+                            />
+                        </div>
+                    )}
+
                     <p>{post.content}</p>
                     <div>image_key: {String(post.image_key ?? "")}</div>
                 </>
