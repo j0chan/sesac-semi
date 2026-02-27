@@ -2,7 +2,7 @@ name: Deploy to EC2
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 concurrency:
   group: deploy-main
@@ -38,11 +38,12 @@ jobs:
           echo "Host=${{ secrets.EC2_HOST }}"
           ssh-keyscan -T 10 -H "${{ secrets.EC2_HOST }}" >> ~/.ssh/known_hosts
 
-      # 1) Backend: pull + deps + migrate + restart (EC2에서 실행)
+      # Backend: pull/install/migrate/restart + healthcheck retry
       - name: Deploy backend (pull/install/migrate/restart)
         run: |
           ssh "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}" << 'EOF'
             set -euo pipefail
+
             cd /opt/app/sesac-semi
             git fetch origin
             git reset --hard origin/main
@@ -52,17 +53,27 @@ jobs:
             source .venv/bin/activate
             pip install -r requirements.txt
 
-            # DB migration
+            # DB migration (needs DATABASE_URL)
             set -a
             source /etc/default/backend
             set +a
             alembic upgrade head
 
             sudo systemctl restart backend
+
+            # Healthcheck retry (wait for backend to bind 127.0.0.1:8000)
+            for i in {1..20}; do
+              if curl -fsS http://127.0.0.1:8000/api/health >/dev/null; then
+                echo "backend health ok"
+                break
+              fi
+              sleep 1
+            done
+
+            # Final check (fail if still down)
             curl -fsS http://127.0.0.1:8000/api/health >/dev/null
           EOF
 
-      # 2) Frontend: dist 업로드 + swap + reload
       - name: Upload frontend dist
         run: |
           rsync -az --delete frontend/dist/ "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/tmp/frontend-dist/"
